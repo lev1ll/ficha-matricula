@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha de Matrícula - Sistema Digital</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="save-notification" id="saveNotification">
+        ✓ Ficha guardada automáticamente
+    </div>
+
+    <div class="top-bar">
+        <div>
+            <button onclick="nuevaFicha()">🆕 Nueva Ficha</button>
+            <button onclick="mostrarGuardadas()">📂 Fichas Guardadas (<span id="countFichas">0</span>)</button>
+        </div>
+        <div>
+            <button onclick="exportarTodasJSON()">💾 Exportar Todas</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Marca de agua de fondo -->
+        <div class="watermark">
+            <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+                <rect x="20" y="220" width="140" height="140" fill="#E41E20"/>
+                <defs>
+                    <linearGradient id="blackGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#4a4a4a;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#000000;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <rect x="100" y="20" width="200" height="200" fill="url(#blackGrad)"/>
+                <text x="150" y="160" font-family="Brush Script MT, cursive" font-size="130" fill="#FFED00" font-weight="bold" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.3)">G</text>
+                <rect x="230" y="180" width="150" height="150" fill="#FFED00" style="filter: drop-shadow(3px 3px 5px rgba(0,0,0,0.2))"/>
+                <text x="255" y="295" font-family="Georgia, serif" font-size="100" font-weight="bold" font-style="italic" fill="#2d2d2d">M</text>
+            </svg>
+        </div>
+        
+        <div class="header">
+            <div class="logo-container">
+                <img src="Logo.jpg" alt="Logo Colegio Cristiano Gabriela Mistral">
+            </div>
+            <div class="header-title">
+                <h1>FICHA DE MATRÍCULA</h1>
+            </div>
+            <div class="header-info">
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <strong>Fecha:</strong>
+                    <input type="text" id="diaFecha" placeholder="DD" style="width:35px; text-align:center; font-size:11px; padding:3px;"> / 
+                    <input type="text" id="mesFecha" placeholder="MM" style="width:35px; text-align:center; font-size:11px; padding:3px;"> / 
+                    <input type="text" id="anoFecha" placeholder="AAAA" style="width:55px; text-align:center; font-size:11px; padding:3px;">
+                </div>
+                <div style="margin-top: 10px; display: flex; align-items: center; gap: 5px;">
+                    <strong>N° de Registro:</strong>
+                    <input type="text" id="numeroRegistro" placeholder="______" style="width:100px; font-size:11px; padding:3px;">
+                </div>
+            </div>
+        </div>
+
+        <div class="ficha-content">
+            <div class="instructions">
+                💡 <strong>Los datos se guardan automáticamente mientras escribe.</strong> Al finalizar, puede imprimir directamente o guardar como PDF usando Ctrl+P → "Guardar como PDF"
+            </div>
+
+            <!-- IDENTIFICACIÓN DEL ALUMNO -->
+            <div class="section">
+                <div class="section-title">IDENTIFICACIÓN DEL ALUMNO</div>
+                
+                <div class="form-row">
+                    <div class="form-field full">
+                        <label>Nombre del alumno</label>
+                        <input type="text" id="nombreAlumno">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>F. Nacimiento</label>
+                        <input type="date" id="fechaNacimiento">
+                    </div>
+                    <div class="form-field">
+                        <label>Edad</label>
+                        <input type="number" id="edad" min="0" max="99">
+                    </div>
+                    <div class="form-field">
+                        <label>RUN</label>
+                        <input type="text" id="run" placeholder="12.345.678-9" maxlength="12">
+                        <small id="runValidacion" style="font-size: 11px; margin-top: 3px;"></small>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Curso al que ingresa</label>
+                        <select id="cursoIngresa">
+                            <option value="">Seleccione...</option>
+                            <option value="1° Básico">1° Básico</option>
+                            <option value="2° Básico">2° Básico</option>
+                            <option value="3° Básico">3° Básico</option>
+                            <option value="4° Básico">4° Básico</option>
+                            <option value="5° Básico">5° Básico</option>
+                            <option value="6° Básico">6° Básico</option>
+                            <option value="7° Básico">7° Básico</option>
+                            <option value="8° Básico">8° Básico</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Repitente</label>
+                        <select id="repitente">
+                            <option value="">Seleccione...</option>
+                            <option value="No">No</option>
+                            <option value="Sí">Sí</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Curso que ha repetido</label>
+                        <select id="cursoRepetido">
+                            <option value="">Seleccione...</option>
+                            <option value="1° Básico">1° Básico</option>
+                            <option value="2° Básico">2° Básico</option>
+                            <option value="3° Básico">3° Básico</option>
+                            <option value="4° Básico">4° Básico</option>
+                            <option value="5° Básico">5° Básico</option>
+                            <option value="6° Básico">6° Básico</option>
+                            <option value="7° Básico">7° Básico</option>
+                            <option value="8° Básico">8° Básico</option>
+                            <option value="Ninguno">Ninguno</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Domicilio</label>
+                        <input type="text" id="domicilio">
+                    </div>
+                    <div class="form-field">
+                        <label>Comuna</label>
+                        <input type="text" id="comuna">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Fono casa</label>
+                        <input type="tel" id="fonoCasa">
+                    </div>
+                    <div class="form-field">
+                        <label>Celular</label>
+                        <input type="tel" id="celular">
+                    </div>
+                    <div class="form-field">
+                        <label>Otro</label>
+                        <input type="tel" id="otroFono">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field full">
+                        <label>Procedencia escolar</label>
+                        <input type="text" id="procedenciaEscolar">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field full">
+                        <label>Enfermedades declaradas</label>
+                        <textarea id="enfermedades"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Informe psicológico o psicopedagógico</label>
+                        <select id="informePsico">
+                            <option value="">Seleccione...</option>
+                            <option value="Sí">Sí</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Pertenece al programa PIE</label>
+                        <select id="programaPIE">
+                            <option value="">Seleccione...</option>
+                            <option value="Sí">Sí</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field full">
+                        <label>Programa del gobierno al que pertenece (chile solidario u otro)</label>
+                        <input type="text" id="programaGobierno">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Pertenece a alguna etnia</label>
+                        <select id="perteneceEtnia">
+                            <option value="">Seleccione...</option>
+                            <option value="Sí">Sí</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Cuál</label>
+                        <input type="text" id="cualEtnia">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field full">
+                        <label>Personas con quien vive el alumno/a</label>
+                        <input type="text" id="personasVive">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ANTECEDENTES FAMILIARES -->
+            <div class="section">
+                <div class="section-title">ANTECEDENTES FAMILIARES</div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label><strong>MADRE</strong> - Nombre</label>
+                        <input type="text" id="nombreMadre">
+                        <label class="checkbox-apoderado">
+                            <input type="checkbox" id="madreApoderado">
+                            <strong>✓ Marcar como apoderada</strong>
+                        </label>
+                    </div>
+                    <div class="form-field">
+                        <label><strong>PADRE</strong> - Nombre</label>
+                        <input type="text" id="nombrePadre">
+                        <label class="checkbox-apoderado">
+                            <input type="checkbox" id="padreApoderado">
+                            <strong>✓ Marcar como apoderado</strong>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Edad</label>
+                        <input type="number" id="edadMadre" min="0" max="120">
+                    </div>
+                    <div class="form-field">
+                        <label>Edad</label>
+                        <input type="number" id="edadPadre" min="0" max="120">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>RUN</label>
+                        <input type="text" id="runMadre" placeholder="12.345.678-9" maxlength="12">
+                        <small id="runMadreValidacion" style="font-size: 11px; margin-top: 3px;"></small>
+                    </div>
+                    <div class="form-field">
+                        <label>RUN</label>
+                        <input type="text" id="runPadre" placeholder="12.345.678-9" maxlength="12">
+                        <small id="runPadreValidacion" style="font-size: 11px; margin-top: 3px;"></small>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Escolaridad</label>
+                        <input type="text" id="escolaridadMadre">
+                    </div>
+                    <div class="form-field">
+                        <label>Escolaridad</label>
+                        <input type="text" id="escolaridadPadre">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Trabajo u oficio</label>
+                        <input type="text" id="trabajoMadre">
+                    </div>
+                    <div class="form-field">
+                        <label>Trabajo u oficio</label>
+                        <input type="text" id="trabajoPadre">
+                    </div>
+                </div>
+            </div>
+
+            <!-- DATOS DEL APODERADO -->
+            <div class="section">
+                <div class="section-title">DATOS DEL/LA APODERADO/A</div>
+                
+                <div class="form-row">
+                    <div class="form-field full">
+                        <label>Nombre</label>
+                        <input type="text" id="nombreApoderado" readonly style="background: #f0f0f0;">
+                        <small style="color: #666; font-size: 10px; margin-top: 3px;">Se completará automáticamente al marcar madre o padre como apoderado</small>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Edad</label>
+                        <input type="number" id="edadApoderado" min="0" max="120" readonly style="background: #f0f0f0;">
+                    </div>
+                    <div class="form-field">
+                        <label>RUN</label>
+                        <input type="text" id="runApoderado" placeholder="12.345.678-9" maxlength="12" readonly style="background: #f0f0f0;">
+                        <small id="runApoderadoValidacion" style="font-size: 11px; margin-top: 3px;"></small>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Escolaridad</label>
+                        <input type="text" id="escolaridadApoderado" readonly style="background: #f0f0f0;">
+                    </div>
+                    <div class="form-field">
+                        <label>Trabajo u oficio</label>
+                        <input type="text" id="trabajoApoderado" readonly style="background: #f0f0f0;">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Parentesco</label>
+                        <input type="text" id="parentesco" readonly style="background: #f0f0f0;">
+                    </div>
+                    <div class="form-field">
+                        <label>Teléfono Apoderado</label>
+                        <input type="tel" id="telefonoApoderado" placeholder="Ej: +56 9 1234 5678">
+                    </div>
+                </div>
+            </div>
+
+            <!-- MOVILIZACIÓN -->
+            <div class="section">
+                <div class="section-title">MOVILIZACIÓN QUE UTILIZARÁ</div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Particular</label>
+                        <input type="text" id="movilizacionParticular" placeholder="Detalles...">
+                    </div>
+                    <div class="form-field">
+                        <label>Escolar</label>
+                        <input type="text" id="movilizacionEscolar" placeholder="Detalles...">
+                    </div>
+                </div>
+
+                <div class="authorization-box">
+                    <p style="font-size: 12px; text-align: justify; margin-bottom: 30px;">
+                        Autorizo a que mi hijo/a sea trasladado desde y hacia el establecimiento a través de la locomoción de acercamiento proporcionada por éste, en forma gratuita, en los horarios establecidos y/o actividades extra programáticas fuera del recinto escolar.
+                    </p>
+                    <div class="signature-line" style="margin: 40px auto 10px; width: 250px;"></div>
+                    <div class="signature-label">Firma del/la apoderado/a</div>
+                </div>
+            </div>
+
+            <!-- COMPROMISOS Y AUTORIZACIONES -->
+            <div class="commitment-section">
+                <div class="commitment-title">COMPROMISO DEL APODERADO</div>
+                <div class="commitment-text">
+                    Yo, <input type="text" id="nombreCompromisoApo" style="width: 400px; display: inline-block; border: none; border-bottom: 1px solid #333; padding: 2px;"> me comprometo a que mi pupilo/a asista regularmente a clases uniformado/a, a cumplir con las normas vigentes del reglamento interno de la escuela, asistir a las reuniones y cada vez que se me solicite, así también, acepto y respeto los valores y principios cristianos que se imparten en esta institución educativa.
+                </div>
+                <div class="commitment-text">
+                    Acredito además haber recibido en conformidad el extracto del reglamento interno del establecimiento y el reglamento de convivencia escolar aceptando en integridad el contenido de estos. También declaro saber que este documento está en formato digital y que puedo acceder libremente a él.
+                </div>
+                <div class="commitment-text">
+                    Recibo este último por: 
+                    <label style="margin-left: 20px;"><input type="checkbox" id="reciboMano"> Mano</label>
+                    <label style="margin-left: 20px;"><input type="checkbox" id="reciboCorreo"> Correo electrónico</label>
+                </div>
+                <div class="signature-box">
+                    <div class="signature-line"></div>
+                    <div class="signature-label">Firma del/la apoderado/a</div>
+                </div>
+            </div>
+
+            <!-- AUTORIZACIÓN RELIGIÓN -->
+            <div class="authorization-box" style="margin-top: 20px;">
+                <p style="font-size: 12px; margin-bottom: 30px;">
+                    Acepto que a mi hijo/a se le imparta la asignatura de religión evangélica como parte de su formación integral del establecimiento.
+                </p>
+                <div class="signature-line" style="margin: 30px auto 10px; width: 250px;"></div>
+                <div class="signature-label">Firma del/la apoderado/a</div>
+            </div>
+
+            <!-- AUTORIZACIÓN SALIDAS -->
+            <div class="authorization-box" style="margin-top: 20px;">
+                <p style="font-size: 12px; margin-bottom: 30px;">
+                    Como apoderado/a, autorizo a mi hijo/a para salir del establecimiento cada vez que se requiera en actividades pedagógicas como talleres, academias, giras científicas, clases de Ed. Física u otras, previo aviso e informe al hogar.
+                </p>
+                <div class="signature-line" style="margin: 30px auto 10px; width: 250px;"></div>
+                <div class="signature-label">Firma del/la apoderado/a</div>
+            </div>
+
+            <!-- CONOCIMIENTO UNIFORME -->
+            <div class="authorization-box" style="margin-top: 20px;">
+                <p style="font-size: 12px; margin-bottom: 30px;">
+                    Tengo conocimiento respecto a la adquisición del uniforme escolar entendiendo que lo puedo obtener en cualquier tienda y que además estos no poseen una marca definida.
+                </p>
+                <div class="signature-line" style="margin: 30px auto 10px; width: 250px;"></div>
+                <div class="signature-label">Firma del/la apoderado/a</div>
+            </div>
+
+            <!-- CORREO ELECTRÓNICO OFICIAL -->
+            <div class="authorization-box" style="margin-top: 20px;">
+                <p style="font-size: 12px; margin-bottom: 15px;">
+                    Declaro que el siguiente correo electrónico será mi canal de información oficial para recepción de citaciones, informes y/o notificaciones por parte del establecimiento.
+                </p>
+                <div class="form-field full">
+                    <label>E-mail</label>
+                    <input type="email" id="emailOficial">
+                </div>
+                <div class="signature-line" style="margin: 40px auto 10px; width: 250px;"></div>
+                <div class="signature-label">Firma del/la apoderado/a</div>
+            </div>
+
+            <!-- AUTORIZACIÓN DE RETIRO -->
+            <div class="authorization-box" style="margin-top: 20px;">
+                <p style="font-size: 13px; margin-bottom: 15px; text-align: center; font-weight: 600; color: #2c5aa0;">
+                    AUTORIZACIÓN DE RETIRO DEL ALUMNO
+                </p>
+                <p style="font-size: 12px; margin-bottom: 15px; text-align: justify;">
+                    Yo, <input type="text" id="nombreApoderadoRetiro" style="width: 280px; display: inline-block; border: none; border-bottom: 1px solid #333; padding: 2px; margin: 0 5px;">, 
+                    autorizo a <input type="text" id="nombrePersonaRetiro" style="width: 280px; display: inline-block; border: none; border-bottom: 1px solid #333; padding: 2px; margin: 0 5px;">, 
+                    RUT <input type="text" id="rutPersonaRetiro" placeholder="12.345.678-9" maxlength="12" style="width: 140px; display: inline-block; border: none; border-bottom: 1px solid #333; padding: 2px; margin: 0 5px;"> 
+                    para que retire a mi pupilo del establecimiento en mi reemplazo.
+                </p>
+                <div class="signature-line" style="margin: 40px auto 10px; width: 250px;"></div>
+                <div class="signature-label">Firma del/la apoderado/a</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="floating-buttons">
+        <button onclick="abrirGoogleSheets()" title="Ver todas las fichas en Google Sheets">📊 Ver en Sheets</button>
+        <button onclick="imprimirComprobante()" title="Imprimir comprobante de matrícula">📄 Comprobante</button>
+        <button onclick="guardarFicha()">💾 Guardar Ficha</button>
+        <button onclick="imprimirPDF()">🖨️ Imprimir / PDF</button>
+    </div>
+
+    <!-- Modal para ver fichas guardadas -->
+    <div class="modal" id="modalFichas">
+        <div class="modal-content">
+            <h2>📂 Fichas Guardadas</h2>
+            <div id="listaFichas" style="margin-bottom: 20px;"></div>
+            <button class="modal-close" onclick="cerrarModal()">Cerrar</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Auto-completar fecha actual al cargar la página
+        window.addEventListener('DOMContentLoaded', function() {
+            const hoy = new Date();
+            const dia = String(hoy.getDate()).padStart(2, '0');
+            const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+            const ano = hoy.getFullYear();
+            
+            if (!document.getElementById('diaFecha').value) {
+                document.getElementById('diaFecha').value = dia;
+            }
+            if (!document.getElementById('mesFecha').value) {
+                document.getElementById('mesFecha').value = mes;
+            }
+            if (!document.getElementById('anoFecha').value) {
+                document.getElementById('anoFecha').value = ano;
+            }
+        });
+    </script>
+</body>
+</html>

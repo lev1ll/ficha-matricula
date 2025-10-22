@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprobante de Matrícula</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            padding: 10px;
+            background: #f5f5f5;
+        }
+
+        .comprobante-container {
+            max-width: 750px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .header-comprobante {
+            display: grid;
+            grid-template-columns: 120px 1fr 120px;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #2c5aa0;
+        }
+
+        .logo-comp {
+            width: 120px;
+            height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-comp img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .titulo-comp {
+            text-align: center;
+        }
+
+        .titulo-comp h1 {
+            font-size: 20px;
+            color: #2c5aa0;
+            margin-bottom: 3px;
+        }
+
+        .titulo-comp h2 {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .seccion-comp {
+            margin: 15px 0;
+            padding: 12px;
+            border: 2px solid #2c5aa0;
+            border-radius: 5px;
+        }
+
+        /* --- ESTA ES LA SECCIÓN MODIFICADA --- */
+        .titulo-seccion {
+            color: #2c5aa0; /* Texto color azul */
+            padding: 0;
+            margin: 0 0 10px 0; /* Margen inferior */
+            font-size: 13px; /* Un poco más grande */
+            font-weight: bold;
+            text-transform: uppercase;
+            border-bottom: 1px solid #e0e0e0; /* Línea divisoria */
+            padding-bottom: 5px; /* Espacio para la línea */
+        }
+        /* --- FIN DE LA MODIFICACIÓN --- */
+
+        .campo-comp {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            padding: 6px 0;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 11px;
+        }
+
+        .campo-comp:last-child {
+            border-bottom: none;
+        }
+
+        .label-comp {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .valor-comp {
+            color: #000;
+            font-weight: normal;
+        }
+
+        .jornada-opciones {
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+        }
+
+        .checkbox-jornada {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .checkbox-jornada input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+        }
+
+        .firmas-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .firma-box {
+            text-align: center;
+        }
+
+        .linea-firma {
+            border-top: 2px solid #000;
+            margin: 40px 0 8px 0;
+        }
+
+        .label-firma {
+            font-size: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .no-print {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .btn-imprimir {
+            background: #2c5aa0;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(44, 90, 160, 0.3);
+        }
+
+        .btn-imprimir:hover {
+            background: #1e3a70;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .comprobante-container {
+                box-shadow: none;
+                padding: 15px;
+                max-width: 100%;
+            }
+
+            .no-print {
+                display: none;
+            }
+
+            @page {
+                size: letter;
+                margin: 0.5in;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="comprobante-container">
+        <div class="header-comprobante">
+            <div class="logo-comp">
+                <img src="Logo_MINEDUC.jpg" alt="Logo MINEDUC">
+            </div>
+            <div class="titulo-comp">
+                <h1>COMPROBANTE DE MATRÍCULA</h1>
+                <h2>AÑO ESCOLAR 2025</h2>
+            </div>
+            <div class="logo-comp">
+                <img src="Logo.jpg" alt="Logo Colegio">
+            </div>
+        </div>
+
+        <div class="seccion-comp">
+            <div class="titulo-seccion">DATOS DEL ALUMNO</div>
+            <div class="campo-comp">
+                <div class="label-comp">Nombre completo:</div>
+                <div class="valor-comp" id="comp_nombreAlumno">_________________________</div>
+            </div>
+            <div class="campo-comp">
+                <div class="label-comp">RUN/IPE:</div>
+                <div class="valor-comp" id="comp_runAlumno">_________________________</div>
+            </div>
+            <div class="campo-comp">
+                <div class="label-comp">Fecha de Nacimiento:</div>
+                <div class="valor-comp" id="comp_fechaNacimiento">_________________________</div>
+            </div>
+        </div>
+
+        <div class="seccion-comp">
+            <div class="titulo-seccion">DATOS DEL APODERADO</div>
+            <div class="campo-comp">
+                <div class="label-comp">Nombre completo:</div>
+                <div class="valor-comp" id="comp_nombreApoderado">_________________________</div>
+            </div>
+            <div class="campo-comp">
+                <div class="label-comp">RUN/IPA:</div>
+                <div class="valor-comp" id="comp_runApoderado">_________________________</div>
+            </div>
+            <div class="campo-comp">
+                <div class="label-comp">Correo electrónico:</div>
+                <div class="valor-comp" id="comp_emailApoderado">_________________________</div>
+            </div>
+            <div class="campo-comp">
+                <div class="label-comp">Teléfono de contacto:</div>
+                <div class="valor-comp" id="comp_telefonoApoderado">_________________________</div>
+            </div>
+        </div>
+
+        <div class="seccion-comp">
+            <div class="titulo-seccion">DATOS DEL ESTABLECIMIENTO</div>
+            <div class="campo-comp">
+                <div class="label-comp">Establecimiento:</div>
+                <div class="valor-comp">Colegio Cristiano Gabriela Mistral</div>
+            </div>
+            <div class="campo-comp">
+                <div class="label-comp">Comuna:</div>
+                <div class="valor-comp">Nueva Imperial</div>
+            </div>
+            <div class="campo-comp">
+                <div class="label-comp">RBD:</div>
+                <div class="valor-comp">6691-5</div>
+            </div>
+            <div class="campo-comp">
+                <div class="label-comp">Curso 2025:</div>
+                <div class="valor-comp" id="comp_curso">_________________________</div>
+            </div>
+            <div class="campo-comp">
+                <div class="label-comp">Jornada:</div>
+                <div class="valor-comp">
+                    <div class="jornada-opciones">
+                        <div class="checkbox-jornada">
+                            <input type="checkbox" id="jornada_manana" disabled>
+                            <label>Mañana</label>
+                        </div>
+                        <div class="checkbox-jornada">
+                            <input type="checkbox" id="jornada_tarde" disabled>
+                            <label>Tarde</label>
+                        </div>
+                        <div class="checkbox-jornada">
+                            <input type="checkbox" id="jornada_completa" checked disabled>
+                            <label>Mañana y Tarde</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="firmas-container">
+            <div class="firma-box">
+                <div class="linea-firma"></div>
+                <div class="label-firma">FIRMA APODERADO/REPRESENTANTE</div>
+            </div>
+            <div class="firma-box">
+                <div class="linea-firma"></div>
+                <div class="label-firma">FIRMA/TIMBRE ESTABLECIMIENTO</div>
+            </div>
+        </div>
+
+        <div class="no-print">
+            <button class="btn-imprimir" onclick="window.print()">🖨️ Imprimir Comprobante</button>
+        </div>
+    </div>
+
+    <script>
+        // Cargar datos desde localStorage si existen
+        window.addEventListener('DOMContentLoaded', function() {
+            const fichaData = JSON.parse(localStorage.getItem('fichaActual') || '{}');
+            
+            if (fichaData.nombreAlumno) {
+                document.getElementById('comp_nombreAlumno').textContent = fichaData.nombreAlumno;
+                document.getElementById('comp_runAlumno').textContent = fichaData.run || '_________________________';
+                
+                // Formatear fecha
+                let fechaNac = '_________________________';
+                if (fichaData.fechaNacimiento) {
+                    const partes = fichaData.fechaNacimiento.split('-'); // AAAA-MM-DD
+                    if (partes.length === 3) {
+                        fechaNac = `${partes[2]}/${partes[1]}/${partes[0]}`; // DD/MM/AAAA
+                    }
+                }
+                document.getElementById('comp_fechaNacimiento').textContent = fechaNac;
+                
+                document.getElementById('comp_curso').textContent = fichaData.cursoIngresa || '_________________________';
+                
+                // Datos del apoderado
+                document.getElementById('comp_nombreApoderado').textContent = fichaData.nombreApoderado || '_________________________';
+                document.getElementById('comp_runApoderado').textContent = fichaData.runApoderado || '_________________________';
+                document.getElementById('comp_emailApoderado').textContent = fichaData.emailOficial || '_________________________';
+                document.getElementById('comp_telefonoApoderado').textContent = fichaData.telefonoApoderado || '_________________________';
+            }
+            
+            // Lanza la ventana de impresión automáticamente
+            window.print();
+            
+            // Cierra la pestaña automáticamente después de imprimir (o cancelar)
+            window.onafterprint = function() {
+                window.close();
+            }
+        });
+    </script>
+</body>
+</html>
